@@ -1,0 +1,48 @@
+digraph wifistates {
+    node [shape=box style=filled]
+
+    { rank=same; Initial Driver_Loaded Supplicant_Starting Driver_Started }
+    { rank=same; Driver_Unloaded Driver_Unloading }
+    { rank=same; Driver_Loading Driver_Failed }
+    { rank=same; Connecting Disconnected }
+    { rank=same; Connected Disconnecting }
+    { rank=same; Driver_Stopped Scan_Mode Driver_Stopping }
+
+    Connected -> Connecting 
+    Connected -> Disconnecting [ label="DHCP_FAILURE\nCMD_DISCONNECT" ]
+    Connecting -> Connected [ label="DHCP_SUCCESS" ]
+    Connecting -> Disconnecting [ label="DHCP_FAILURE\nCMD_DISCONNECT" ]
+    Disconnected -> Scan_Mode [ dir=both label=CMD_START_SCAN ]
+    Disconnecting -> Disconnected [ label=SUP_STATE_CHANGE_EVENT ]
+    Driver_Failed -> Driver_Unloading [dir=back label=CMD_UNLOAD_DRIVER_FAILURE ]
+    Driver_Loaded -> Driver_Unloading [ label=CMD_UNLOAD_DRIVER ]
+    Driver_Loaded -> Supplicant_Starting [ label=CMD_START_SUPPLICANT ]
+    Driver_Loading -> Driver_Failed [label=CMD_LOAD_DRIVER_FAILURE]
+    Driver_Loading -> Driver_Loaded [label=CMD_LOAD_DRIVER_SUCCESS]
+    Driver_Started -> Disconnected
+    Driver_Started -> Driver_Stopping [ label=CMD_STOP_DRIVER ]
+    Driver_Started -> Scan_Mode 
+    Driver_Stopped -> Driver_Started [ label=SUP_STATE_CHANGE_EVENT ]
+    Driver_Stopping -> Driver_Stopped [ label=SUP_STATE_CHANGE_EVENT ]
+    Driver_Unloaded -> Driver_Loading [ label=CMD_LOAD_DRIVER ]
+    Driver_Unloaded -> Driver_Unloading [dir=back label=CMD_UNLOAD_DRIVER_SUCCESS ]
+    Initial -> Driver_Loaded
+    Initial -> Driver_Unloaded
+    Supplicant_Starting -> Driver_Started [ label=SUP_CONNECTION_EVENT ]
+    Supplicant_Stopping -> Driver_Loaded [ label=CMD_STOP_SUPPLICANT_FAILURE ]
+    default -> Supplicant_Stopping [ label=CMD_STOP_SUPPLICANT ]
+    default -> Disconnected [ label=NETWORK_DISCONNECTION_EVENT ]
+    default -> Connecting [ label=NETWORK_CONNECTION_EVENT ]
+    default -> Disconnecting [ label=CMD_CONNECT_NETWORK ]
+    default1 -> Driver_Loaded [ label=SUP_DISCONNECTION_EVENT ]
+
+    Connected           [ color=green ];
+    Driver_Loading      [ defer="CMD_LOAD_DRIVER\nCMD_UNLOAD_DRIVER\nCMD_START_SUPPLICANT\nCMD_STOP_SUPPLICANT\nCMD_START_DRIVER\nCMD_STOP_DRIVER" ];
+    Driver_Starting     [ defer="CMD_START_DRIVER\nCMD_STOP_DRIVER\nNETWORK_CONNECTION_EVENT\nNETWORK_DISCONNECTION_EVENT\nAUTHENTICATION_FAILURE_EVENT\nCMD_START_SCAN\nCMD_DISCONNECT\nCMD_REASSOCIATE\nCMD_RECONNECT" ];
+    Driver_Stopped      [ color=green defer="CMD_STOP_DRIVER\nNETWORK_CONNECTION_EVENT\nNETWORK_DISCONNECTION_EVENT\nAUTHENTICATION_FAILURE_EVENT\nCMD_DISCONNECT\nCMD_REASSOCIATE\nCMD_RECONNECT" ];
+    Driver_Stopping     [ defer="CMD_START_DRIVER\nCMD_STOP_DRIVER\nNETWORK_CONNECTION_EVENT\nNETWORK_DISCONNECTION_EVENT\nAUTHENTICATION_FAILURE_EVENT\nCMD_START_SCAN\nCMD_DISCONNECT\nCMD_REASSOCIATE\nCMD_RECONNECT" ];
+    Driver_Unloading    [ defer="CMD_LOAD_DRIVER\nCMD_UNLOAD_DRIVER\nCMD_START_SUPPLICANT\nCMD_STOP_SUPPLICANT\nCMD_START_DRIVER\nCMD_STOP_DRIVER" ];
+    Initial             [ color=firebrick ]; 
+    Supplicant_Starting [ defer="CMD_LOAD_DRIVER\nCMD_UNLOAD_DRIVER\nCMD_START_SUPPLICANT\nCMD_STOP_SUPPLICANT\nCMD_START_DRIVER\nCMD_STOP_DRIVER" ];
+    Unused              [ defer="CMD_ADD_OR_UPDATE_NETWORK\nCMD_DISABLE_NETWORK\nCMD_ENABLE_BACKGROUND_SCAN\nCMD_ENABLE_NETWORK\nCMD_ENABLE_RSSI_POLL\nCMD_REMOVE_NETWORK\nCMD_RSSI_POLL\nCMD_SELECT_NETWORK\nCMD_STOP_SUPPLICANT_SUCCESS\nSUP_SCAN_RESULTS_EVENT\nCTRL_EVENT_LINK_SPEED\nCTRL_EVENT_DRIVER_STATE\nCTRL_EVENT_EAP_FAILURE\nCTRL_EVENT_BSS_ADDED\nCTRL_EVENT_BSS_REMOVED\nKEY_COMPLETED_EVENT\nASSOCIATED_WITH_EVENT\nWPS_AP_AVAILABLE_EVENT\nNETWORK_RECONNECTION_EVENT" ];
+}
